@@ -88,4 +88,27 @@ public class TabulatedFunctions {
         }
         return result;
     }
+
+    public static void serialize(TabulatedFunction function, String fileName) {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName));
+            out.writeObject(function);
+            out.flush();
+            out.close();
+        } catch (IOException ex) {
+            throw new RuntimeException("Error during serialiation function", ex);
+        }
+    }
+
+    public static TabulatedFunction deserialize(String fileName) {
+        TabulatedFunction func;
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName));
+            func = (TabulatedFunction) in.readObject();
+            in.close();
+        } catch (IOException | ClassNotFoundException ex) {
+            throw new RuntimeException("Error during deserialiation function", ex);
+        }
+        return func;
+    }
 }

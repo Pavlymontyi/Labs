@@ -1,9 +1,15 @@
 package functions;
 
 
-public class ArrayTabulatedFunction implements TabulatedFunction{
+import java.io.*;
+
+public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable{
 
     private FunctionPoint[] pointsArray;
+
+    public ArrayTabulatedFunction(){
+        super();
+    }
 
     public ArrayTabulatedFunction(double leftX, double rightX, int pointsCount) {
         if(leftX > rightX) throw new IllegalArgumentException("leftX > rightX!");
@@ -180,4 +186,13 @@ public class ArrayTabulatedFunction implements TabulatedFunction{
         System.out.println();
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(pointsArray);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        pointsArray = (FunctionPoint[]) in.readObject();
+    }
 }
