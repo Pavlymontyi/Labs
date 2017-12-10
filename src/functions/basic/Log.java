@@ -5,6 +5,9 @@ import functions.Function;
 public class Log implements Function{
     private double bas;
 
+    public Log(){
+        bas = Math.E;
+    }
     public Log(double a){
         bas = a;
     }

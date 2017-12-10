@@ -10,7 +10,7 @@ public class TabulatedFunctions {
             throw new IllegalArgumentException("interval is out of domain");
         }
         double[] values = new double[pointsCount];
-        double x = 0;
+        double x = leftX;
         double interval = (rightX-leftX)/(pointsCount-1);
         for(int i = 0; i < pointsCount; i++){
             values[i] = function.getFunctionValue(x);
@@ -30,7 +30,7 @@ public class TabulatedFunctions {
                 outputStream.writeDouble(fp.y);
             }
             outputStream.flush();
-            //outputStream.close(); //todo: need to close??
+            //outputStream.close();
         } catch (IOException ex) {
             throw new RuntimeException("Error during i/o function", ex);
         }

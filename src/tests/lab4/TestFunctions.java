@@ -6,8 +6,8 @@ import functions.TabulatedFunction;
 
 public class TestFunctions {
 
-    static TabulatedFunction arrayTabulatedFunction;
-    static TabulatedFunction linkedListTabulatedFunction;
+    public static TabulatedFunction arrayTabulatedFunction;
+    public static TabulatedFunction linkedListTabulatedFunction;
 
     static {
         double[] a = {16, 9, 4, 1, 0, 1, 4, 9, 16};
