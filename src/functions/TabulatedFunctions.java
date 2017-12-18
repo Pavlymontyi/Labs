@@ -3,6 +3,8 @@ package functions;
 import java.io.*;
 
 public class TabulatedFunctions {
+    private static TabulatedFunctionFactory tabulatedFunctionFactory = new ArrayTabulatedFunction.ArrayTabulatedFunctionFactory();
+
     private TabulatedFunctions(){}
 
     public static TabulatedFunction tabulate(Function function, double leftX, double rightX, int pointsCount) {
@@ -16,7 +18,7 @@ public class TabulatedFunctions {
             values[i] = function.getFunctionValue(x);
             x+=interval;
         }
-        return new LinkedListTabulatedFunction(leftX, rightX, values);
+        return tabulatedFunctionFactory.createTabulatedFunction(leftX, rightX, values);
     }
 
     public static void outputTabulatedFunction(TabulatedFunction function, OutputStream out){
@@ -46,7 +48,7 @@ public class TabulatedFunctions {
                 FunctionPoint fp = new FunctionPoint(inputStream.readDouble(), inputStream.readDouble());
                 readPoints[i] = fp;
             }
-            result = new ArrayTabulatedFunction(readPoints);
+            result = tabulatedFunctionFactory.createTabulatedFunction(readPoints);
         } catch (IOException ex) {
             throw new RuntimeException("Error during i/o function", ex);
         }
@@ -82,7 +84,7 @@ public class TabulatedFunctions {
                 FunctionPoint fp = new FunctionPoint(x, y);
                 readPoints[i] = fp;
             }
-            result = new ArrayTabulatedFunction(readPoints);
+            result = tabulatedFunctionFactory.createTabulatedFunction(readPoints);
         } catch (IOException ex) {
             throw new RuntimeException("Error during i/o function", ex);
         }
@@ -110,5 +112,22 @@ public class TabulatedFunctions {
             throw new RuntimeException("Error during deserialiation function", ex);
         }
         return func;
+    }
+
+    public static void setTabulatedFunctionFactory(TabulatedFunctionFactory factory){
+        System.out.println("Setting factory: "+factory.getClass());
+        tabulatedFunctionFactory = factory;
+    }
+
+    public static TabulatedFunction createTabulatedFunction(double leftX, double rightX, int pointsCount) {
+        return tabulatedFunctionFactory.createTabulatedFunction(leftX, rightX, pointsCount);
+    }
+
+    public static TabulatedFunction createTabulatedFunction(double leftX, double rightX, double[] values) {
+        return tabulatedFunctionFactory.createTabulatedFunction(leftX, rightX, values);
+    }
+
+    public static TabulatedFunction createTabulatedFunction(FunctionPoint[] points) {
+        return tabulatedFunctionFactory.createTabulatedFunction(points);
     }
 }

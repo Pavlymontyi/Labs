@@ -3,6 +3,7 @@ package gui.documents;
 import functions.*;
 
 import javax.swing.*;
+import java.util.Iterator;
 
 public class DocumentTabulatedFunction implements TabulatedFunction {
 
@@ -32,7 +33,7 @@ public class DocumentTabulatedFunction implements TabulatedFunction {
     }
 
     public void newFunction(double leftX, double rightX, int pointsCount) {
-        tabulatedFunction = new ArrayTabulatedFunction(leftX, rightX, pointsCount);
+        tabulatedFunction = TabulatedFunctions.createTabulatedFunction(leftX, rightX, pointsCount);
         documentName = null;
         modified = false;
         updateAssignedFileLabel();
@@ -149,5 +150,10 @@ public class DocumentTabulatedFunction implements TabulatedFunction {
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    @Override
+    public Iterator<FunctionPoint> iterator() {
+        return tabulatedFunction.iterator();
     }
 }

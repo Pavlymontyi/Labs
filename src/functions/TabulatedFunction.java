@@ -1,6 +1,6 @@
 package functions;
 
-public interface TabulatedFunction extends Function {
+public interface TabulatedFunction extends Function, Iterable<FunctionPoint>{
     double getPointX(int index);
     double getPointY(int index);
     public void setPoint(int index, FunctionPoint point) throws InappropriateFunctionPointException;

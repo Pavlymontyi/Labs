@@ -2,6 +2,8 @@ package functions;
 
 
 import java.io.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable{
 
@@ -152,7 +154,8 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable
         pointsArray[index + i] = null;
     }
 
-    public void addPoint(FunctionPoint point){
+    public void addPoint(FunctionPoint point) throws InappropriateFunctionPointException {
+        checkExistingPointsX(point.x);
         int a = 0;
         if(pointsArray.length == getPointsCounts()){
             FunctionPoint[] newArray = new FunctionPoint[getPointsCounts()*2];
@@ -177,6 +180,17 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable
         }
     }
 
+    private void checkExistingPointsX(double x) throws InappropriateFunctionPointException {
+        int i = 0;
+        int length = getPointsCounts();
+        while (i < length) {
+            if(x == getPointX(i)){
+                throw new InappropriateFunctionPointException("Point with x="+x+" already exists");
+            }
+            i++;
+        }
+    }
+
     public void print(){
         int i = 0;
         while(i < getPointsCounts()){
@@ -194,5 +208,49 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Externalizable
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         pointsArray = (FunctionPoint[]) in.readObject();
+    }
+
+    @Override
+    public Iterator iterator() {
+        return new Iterator() {
+            int currentIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return currentIndex < getPointsCounts();
+            }
+
+            @Override
+            public Object next() {
+                if (hasNext()) {
+                    return pointsArray[currentIndex++];
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+
+            @Override
+            public void remove(){
+                throw new UnsupportedOperationException("remove");
+            }
+        };
+    }
+
+    public static class ArrayTabulatedFunctionFactory implements TabulatedFunctionFactory{
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, int pointsCount) {
+            return new ArrayTabulatedFunction(leftX, rightX, pointsCount);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, double[] values) {
+            return new ArrayTabulatedFunction(leftX, rightX, values);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(FunctionPoint[] points) {
+            return new ArrayTabulatedFunction(points);
+        }
     }
 }

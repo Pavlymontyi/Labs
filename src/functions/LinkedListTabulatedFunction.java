@@ -1,6 +1,7 @@
 package functions;
 
 import java.io.*;
+import java.util.Iterator;
 
 public class LinkedListTabulatedFunction implements TabulatedFunction, Serializable {
 
@@ -84,7 +85,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
     }
 
     public double getPointX(int index){
-        if(index < 0 || index > length-1) throw new FunctionPointIndexOutOfBoundsException();
+        if(index < 0 || index > length - 1) throw new FunctionPointIndexOutOfBoundsException();
         return getNodeByIndex(index).point.x;
     }
 
@@ -118,13 +119,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
     }
 
     public void addPoint(FunctionPoint point) throws InappropriateFunctionPointException {
-        int i = 0;
-        while (i < length) {
-            i++;
-            if(point.x == getPointX(i)){
-                throw new InappropriateFunctionPointException();
-            }
-        }
+       checkExistingPointsX(point.x);
         if(point.x > getRightDomainBorder()){
             addNodeToTail(point);
         }
@@ -144,6 +139,16 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
                 index++;
             }
             addNodeByIndex(index, point);
+        }
+    }
+
+    private void checkExistingPointsX(double x) throws InappropriateFunctionPointException {
+        int i = 0;
+        while (i < length) {
+            if(x == getPointX(i)){
+                throw new InappropriateFunctionPointException();
+            }
+            i++;
         }
     }
 
@@ -193,7 +198,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
     }
 
     public void setPointY(int index, double y){
-        if(index < 0 || index > length-1) throw new FunctionPointIndexOutOfBoundsException();
+        if(index < 0 || index > length - 1) throw new FunctionPointIndexOutOfBoundsException();
         getNodeByIndex(index).point.y = y;
     }
 
@@ -277,6 +282,47 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Serializa
     public void print(){
         for(int i = 0; i < length; i++){
             System.out.println(i + ") x: " + getPointX(i) + "; y: " + getPointY(i));
+        }
+    }
+
+    @Override
+    public Iterator iterator() {
+        return new Iterator() {
+            FunctionNode currentNode = head;
+
+            @Override
+            public boolean hasNext() {
+                return currentNode.next != head;
+            }
+
+            @Override
+            public Object next() {
+                currentNode = currentNode.next;
+                return currentNode.point;
+            }
+
+            @Override
+            public void remove(){
+                throw new UnsupportedOperationException("remove");
+            }
+        };
+    }
+
+    public static class LinkedListTabulatedFunctionFactory implements TabulatedFunctionFactory {
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, int pointsCount) {
+            return new LinkedListTabulatedFunction(leftX, rightX, pointsCount);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(double leftX, double rightX, double[] values) {
+            return new LinkedListTabulatedFunction(leftX, rightX, values);
+        }
+
+        @Override
+        public TabulatedFunction createTabulatedFunction(FunctionPoint[] points) {
+            return new LinkedListTabulatedFunction(points);
         }
     }
 }
