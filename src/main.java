@@ -3,6 +3,7 @@ import tests.lab4.Task8;
 import tests.lab4.Task9;
 import tests.lab8.Task1;
 import tests.lab8.Task2;
+import tests.lab8.Task3;
 
 
 public class main {
@@ -13,5 +14,6 @@ public class main {
 
         Task1.test();
         Task2.test();
+        Task3.test();
     }
 }

@@ -24,6 +24,6 @@ public class Task2 {
         tf = TabulatedFunctions.tabulate(f, 0, Math.PI, 11);
         System.out.println(tf.getClass());
 
-        System.out.println("Task2: Test ArrayTabulatedFactory END");
+        System.out.println("Task2: Test ArrayTabulatedFactory END\n");
     }
 }

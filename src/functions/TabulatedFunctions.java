@@ -1,6 +1,10 @@
 package functions;
 
+import sun.reflect.misc.ConstructorUtil;
+
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class TabulatedFunctions {
     private static TabulatedFunctionFactory tabulatedFunctionFactory = new ArrayTabulatedFunction.ArrayTabulatedFunctionFactory();
@@ -19,6 +23,21 @@ public class TabulatedFunctions {
             x+=interval;
         }
         return tabulatedFunctionFactory.createTabulatedFunction(leftX, rightX, values);
+    }
+
+    public static TabulatedFunction tabulate(Class<? extends TabulatedFunction> tabulatedFunctionClass,
+                                             Function function, double leftX, double rightX, int pointsCount) {
+        if(leftX <= function.getLeftDomainBorder() || rightX >= function.getRightDomainBorder()){
+            throw new IllegalArgumentException("interval is out of domain");
+        }
+        double[] values = new double[pointsCount];
+        double x = leftX;
+        double interval = (rightX-leftX)/(pointsCount-1);
+        for(int i = 0; i < pointsCount; i++){
+            values[i] = function.getFunctionValue(x);
+            x+=interval;
+        }
+        return createTabulatedFunction(tabulatedFunctionClass, leftX, rightX, values);
     }
 
     public static void outputTabulatedFunction(TabulatedFunction function, OutputStream out){
@@ -129,5 +148,49 @@ public class TabulatedFunctions {
 
     public static TabulatedFunction createTabulatedFunction(FunctionPoint[] points) {
         return tabulatedFunctionFactory.createTabulatedFunction(points);
+    }
+
+    public static TabulatedFunction createTabulatedFunction(Class<? extends TabulatedFunction> tabulatedFunctionClass,
+                                                            double leftX,
+                                                            double rightX,
+                                                            int pointsCount) {
+        TabulatedFunction newInstance = null;
+        try {
+            Constructor constructor = tabulatedFunctionClass.getConstructor(double.class, double.class, int.class);
+            newInstance = (TabulatedFunction) constructor.newInstance(leftX, rightX, pointsCount);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(e);
+        }
+        return newInstance;
+    }
+
+    public static TabulatedFunction createTabulatedFunction(Class<? extends TabulatedFunction> tabulatedFunctionClass,
+                                                            double leftX,
+                                                            double rightX,
+                                                            double[] values) {
+        TabulatedFunction newInstance = null;
+        try {
+            Constructor constructor = tabulatedFunctionClass.getConstructor(double.class, double.class, double[].class);
+            newInstance = (TabulatedFunction) constructor.newInstance(leftX, rightX, values);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(e);
+        }
+        return newInstance;
+    }
+
+    public static TabulatedFunction createTabulatedFunction(Class<? extends TabulatedFunction> tabulatedFunctionClass,
+                                                            FunctionPoint[] points) {
+        TabulatedFunction newInstance = null;
+        try {
+            Constructor constructor = tabulatedFunctionClass.getConstructor(FunctionPoint[].class);
+            System.out.println(constructor);
+            newInstance = (TabulatedFunction) constructor.newInstance(new Object[] {points});
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException(e);
+        }
+        return newInstance;
     }
 }
